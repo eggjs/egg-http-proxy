@@ -11,7 +11,11 @@
     "egg-plugin",
     "proxy"
   ],
-  "dependencies": {},
+  "dependencies": {
+    "address": "^1.1.2",
+    "content-type": "^1.0.4",
+    "formstream": "^1.1.0"
+  },
   "devDependencies": {
     "autod": "^3.0.1",
     "autod-egg": "^1.1.0",
@@ -20,7 +24,11 @@
     "egg-ci": "^1.11.0",
     "egg-mock": "^3.21.0",
     "eslint": "^5.13.0",
-    "eslint-config-egg": "^7.1.0"
+    "eslint-config-egg": "^7.1.0",
+    "inflation": "^2.0.0",
+    "mz": "^2.7.0",
+    "mz-modules": "^2.1.0",
+    "raw-body": "^2.4.1"
   },
   "engines": {
     "node": ">=10.0.0"
@@ -35,10 +43,9 @@
     "autod": "autod"
   },
   "files": [
-    "app.js",
-    "agent.js",
-    "config",
-    "app"
+    "app",
+    "lib",
+    "config"
   ],
   "ci": {
     "version": "10, 12"
