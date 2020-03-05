@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * egg-http-proxy default config
+ * @eggjs/http-proxy default config
  *
  * @member Config#httpProxy
  * @property {Number} timeout - proxy timeout, ms

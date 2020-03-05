@@ -1,5 +1,5 @@
 {
-  "name": "egg-http-proxy",
+  "name": "@eggjs/http-proxy",
   "version": "1.0.0",
   "description": "http proxy for egg",
   "eggPlugin": {
@@ -11,6 +11,9 @@
     "egg-plugin",
     "proxy"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "dependencies": {
     "address": "^1.1.2",
     "content-type": "^1.0.4",
@@ -53,6 +56,6 @@
   "repository": "git@github.com:eggjs/egg-http-proxy.git",
   "bugs": "https://github.com/eggjs/egg/issues",
   "homepage": "https://github.com/eggjs/egg-http-proxy#readme",
-  "author": "TZ<atian25@qq.com>",
+  "author": "TZ <atian25@qq.com>",
   "license": "MIT"
 }

@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * egg-http-proxy default config
+ * @eggjs/http-proxy unittest config
  *
  * @member Config#httpProxy
  */

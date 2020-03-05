@@ -1,4 +1,4 @@
-# egg-http-proxy
+# @eggjs/http-proxy
 
 [![NPM version][npm-image]][npm-url]
 [![build status][travis-image]][travis-url]
@@ -7,18 +7,18 @@
 [![Known Vulnerabilities][snyk-image]][snyk-url]
 [![npm download][download-image]][download-url]
 
-[npm-image]: https://img.shields.io/npm/v/egg-http-proxy.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/egg-http-proxy
+[npm-image]: https://img.shields.io/npm/v/@eggjs/http-proxy.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/@eggjs/http-proxy
 [travis-image]: https://img.shields.io/travis/eggjs/egg-http-proxy.svg?style=flat-square
 [travis-url]: https://travis-ci.org/eggjs/egg-http-proxy
 [codecov-image]: https://img.shields.io/codecov/c/github/eggjs/egg-http-proxy.svg?style=flat-square
 [codecov-url]: https://codecov.io/github/eggjs/egg-http-proxy?branch=master
 [david-image]: https://img.shields.io/david/eggjs/egg-http-proxy.svg?style=flat-square
 [david-url]: https://david-dm.org/eggjs/egg-http-proxy
-[snyk-image]: https://snyk.io/test/npm/egg-http-proxy/badge.svg?style=flat-square
-[snyk-url]: https://snyk.io/test/npm/egg-http-proxy
-[download-image]: https://img.shields.io/npm/dm/egg-http-proxy.svg?style=flat-square
-[download-url]: https://npmjs.org/package/egg-http-proxy
+[snyk-image]: https://snyk.io/test/npm/@eggjs/http-proxy/badge.svg?style=flat-square
+[snyk-url]: https://snyk.io/test/npm/@eggjs/http-proxy
+[download-image]: https://img.shields.io/npm/dm/@eggjs/http-proxy.svg?style=flat-square
+[download-url]: https://npmjs.org/package/@eggjs/http-proxy
 
 A simple http proxy base on egg httpclient.
 
@@ -26,14 +26,14 @@ A simple http proxy base on egg httpclient.
 
 
 ```bash
-$ npm i egg-http-proxy --save
+$ npm i @eggjs/http-proxy --save
 ```
 
 ```js
 // {app_root}/config/plugin.js
 exports.httpProxy = {
   enable: true,
-  package: 'egg-http-proxy',
+  package: '@eggjs/http-proxy',
 };
 ```
 
