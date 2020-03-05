@@ -20,17 +20,14 @@
 [download-image]: https://img.shields.io/npm/dm/egg-http-proxy.svg?style=flat-square
 [download-url]: https://npmjs.org/package/egg-http-proxy
 
-<!--
-Description here.
--->
+A simple http proxy base on egg httpclient.
 
 ## Install
+
 
 ```bash
 $ npm i egg-http-proxy --save
 ```
-
-## Usage
 
 ```js
 // {app_root}/config/plugin.js
@@ -40,19 +37,46 @@ exports.httpProxy = {
 };
 ```
 
+## Usage
+
+```js
+/**
+ * @param {String} host - target host.
+ * @param {Object} [options] - options for request, see https://github.com/node-modules/urllib
+ * @param {Boolean} [options.withCredentials] - if true, will send cookie when cors
+ * @param {Function} [options.rewrite] - rewrite target url obj
+ */
+await ctx.proxyRequest(host, options);
+```
+
+### target host
+
+```js
+// current url: http://eggjs.org/api/user -> http://github.com/api/user
+await ctx.proxyRequest('github.com');
+```
+
+### rewrite path
+
+```js
+// current url: http://eggjs.org/api/user -> http://github.com/egg/eggjs/api/user
+await ctx.proxyRequest('github.com', {
+  rewrite(urlObj) {
+    urlObj.pathname = '/egg/eggjs/api/user';
+  },
+});
+```
+
 ## Configuration
 
 ```js
 // {app_root}/config/config.default.js
 exports.httpProxy = {
+
 };
 ```
 
 see [config/config.default.js](config/config.default.js) for more detail.
-
-## Example
-
-<!-- example here -->
 
 ## Questions & Suggestions
 
