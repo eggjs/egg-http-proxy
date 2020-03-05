@@ -2,12 +2,19 @@
 
 /**
  * egg-http-proxy default config
+ *
  * @member Config#httpProxy
  * @property {Number} timeout - proxy timeout, ms
+ * @property {Boolean} withCredentials - whether send cookie when cors
  * @property {Object} ignoreHeaders - ignore request/response headers
  */
 exports.httpProxy = {
   timeout: 10 * 1000,
+
+  withCredentials: false,
+
+  charsetHeaders: '_input_charset',
+
   ignoreHeaders: {
     'strict-transport-security': true,
     'x-powered-by': true,
@@ -23,7 +30,6 @@ exports.httpProxy = {
     'content-encoding': true,
     upgrade: true,
   },
-  charsetHeaders: '_input_charset',
 };
 
 exports.customLogger = {

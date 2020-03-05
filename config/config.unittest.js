@@ -2,9 +2,8 @@
 
 /**
  * egg-http-proxy default config
+ *
  * @member Config#httpProxy
- * @property {Number} timeout - proxy timeout, ms
- * @property {Object} ignoreHeaders - ignore request/response headers
  */
 exports.httpProxy = {
   // In unittest, request proxy to self app, make the app server has two http request
