@@ -33,12 +33,14 @@ describe('test/http-proxy.test.js', () => {
     const res = await app.httpRequest()
       .get('/proxy/header')
       .set('x-client', 'unittest')
+      .set('X-CASE', 'low')
       .set('x-powered-by', 'client')
       .unexpectHeader('x-powered-by')
       .expect(200);
 
     assert(!res.body['x-powered-by']);
     assert(res.body['x-forwarded-for'] === address.ip());
+    assert(res.body['x-case'] === 'low');
   });
 
   it('should x-forwarded-for', async () => {
