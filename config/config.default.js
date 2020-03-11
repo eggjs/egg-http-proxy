@@ -24,7 +24,6 @@ exports.httpProxy = {
     'keep-alive': true,
     'proxy-authenticate': true,
     'proxy-authorization': true,
-    'content-length': true,
     te: true,
     trailer: true,
     'transfer-encoding': true,
