@@ -27,7 +27,6 @@ exports.httpProxy = {
     te: true,
     trailer: true,
     'transfer-encoding': true,
-    'content-encoding': true,
     upgrade: true,
   },
 };

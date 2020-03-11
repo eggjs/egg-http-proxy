@@ -12,3 +12,8 @@ exports.middleware = [ 'test' ];
 exports.test = {
   match: '/proxy',
 };
+
+exports.httpProxy = {
+  withCredentials: false,
+};
+

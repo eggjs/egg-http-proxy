@@ -13,6 +13,7 @@ class ProxyController extends Controller {
     await ctx.proxyRequest(host, {
       rewrite(urlObj) {
         urlObj.pathname = urlObj.pathname.replace(/^\/proxy/, '/real');
+        return urlObj;
       },
       ...opts,
     });
@@ -42,6 +43,7 @@ class ProxyController extends Controller {
     await this._request({
       rewrite(urlObj) {
         urlObj.pathname = urlObj.pathname.replace(/^\/proxy\/uploadFileMode/, '/real/upload');
+        return urlObj;
       },
     });
   }
@@ -78,6 +80,7 @@ class ProxyController extends Controller {
       },
       rewrite(urlObj) {
         urlObj.pathname = '/real/header';
+        return urlObj;
       },
       beforeRequest({ headers }) {
         delete headers['test-header'];
