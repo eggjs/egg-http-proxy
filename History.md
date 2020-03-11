@@ -1,4 +1,10 @@
 
+1.0.2 / 2020-03-11
+==================
+
+**fixes**
+  * [[`9a71d1d`](http://github.com/eggjs/egg-http-proxy/commit/9a71d1da7d64ba446c76444d577f665e6438205b)] - fix: should not set content-type when body (#3) (TZ | 天猪 <<atian25@qq.com>>)
+
 1.0.1 / 2020-03-10
 ==================
 
