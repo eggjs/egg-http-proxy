@@ -1,6 +1,6 @@
 {
   "name": "@eggjs/http-proxy",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "http proxy for egg",
   "eggPlugin": {
     "name": "httpProxy"
