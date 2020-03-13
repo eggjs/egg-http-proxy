@@ -1,4 +1,10 @@
 
+1.0.4 / 2020-03-13
+==================
+
+**others**
+  * [[`68352ca`](http://github.com/eggjs/egg-http-proxy/commit/68352caa34382497f471e457306b1b496081a66c)] - refactor: use nock for unittest (#5) (TZ | 天猪 <<atian25@qq.com>>)
+
 1.0.3 / 2020-03-12
 ==================
 
