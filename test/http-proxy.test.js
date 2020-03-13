@@ -4,9 +4,11 @@ const path = require('path');
 const mock = require('egg-mock');
 const assert = require('assert');
 const address = require('address');
+const mockServer = require('./fixtures/mock_server');
 
 describe('test/http-proxy.test.js', () => {
   let app;
+
   before(async () => {
     app = mock.app({
       baseDir: 'apps/http-proxy-test',
@@ -14,164 +16,154 @@ describe('test/http-proxy.test.js', () => {
     return app.ready();
   });
 
+  beforeEach(() => mockServer.mock());
+  afterEach(() => mockServer.restore());
+
   after(() => app.close());
   afterEach(mock.restore);
 
-  it('should GET HTML', async () => {
+  it('should work', async () => {
     const res = await app.httpRequest()
       .get('/proxy')
       .set('x-client', 'unittest')
+      .set('X-CASE', 'low')
       .query('name=tz')
+      .expect('x-mock', 'true')
       .expect(200);
 
-    assert(res.headers['x-proxy'] === 'true');
-    assert(res.headers['x-origin'] === 'real-server');
-    assert(res.text === 'hi, egg');
+    assert(res.body.path = '/?name=tz');
+    assert(res.body.headers['x-client'] === 'unittest');
+    assert(res.body.headers['x-case'] === 'low');
+    assert(res.body.headers['x-forwarded-for'] === address.ip());
+    assert(res.body.headers.host.startsWith('example.com'));
   });
 
   it('should filter headers', async () => {
     const res = await app.httpRequest()
       .get('/proxy/header')
-      .set('x-client', 'unittest')
-      .set('X-CASE', 'low')
-      .set('x-powered-by', 'client')
+      .set('te', 'compress')
+      .expect('x-test', 'test')
+      .expect('x-mock', 'true')
       .unexpectHeader('x-powered-by')
       .expect(200);
 
-    assert(!res.body['x-powered-by']);
-    assert(res.body['x-forwarded-for'] === address.ip());
-    assert(res.body['x-case'] === 'low');
+    assert(res.body.path = '/header');
+    assert(!res.body.te);
   });
 
   it('should x-forwarded-for', async () => {
     const res = await app.httpRequest()
       .get('/proxy/header')
-      .set('x-client', 'unittest')
       .set('x-forwarded-for', '1.2.3.4')
+      .expect('x-mock', 'true')
       .expect(200);
 
-    assert(res.body['x-forwarded-for'] === `1.2.3.4, ${address.ip()}`);
+    assert(res.body.headers['x-forwarded-for'] === `1.2.3.4, ${address.ip()}`);
   });
 
   it('should PUT 204', async () => {
     await app.httpRequest()
       .put('/proxy/empty')
-      .set('x-client', 'unittest')
       .set('cookie', 'csrfToken=abc')
       .set('x-csrf-token', 'abc')
-      .query('name=tz')
-      .send({ a: 'b' })
+      .expect('x-mock', 'true')
       .expect(204);
   });
 
-  it('should POST JSON', async () => {
+  it('should POST', async () => {
     const res = await app.httpRequest()
       .post('/proxy/json')
-      .set('x-client', 'unittest')
       .set('cookie', 'csrfToken=abc')
       .set('x-csrf-token', 'abc')
-      .query('name=tz')
       .send({ a: 'b', foo: { bar: true } })
+      .expect('x-mock', 'true')
       .expect(200);
 
-    assert(res.headers['x-proxy'] === 'true');
-    assert(res.headers['x-origin'] === 'real-server');
-    assert(res.body.a === 'b');
-    assert(res.body.foo.bar === true);
+    assert(res.body.requestBody.a === 'b');
+    assert(res.body.requestBody.foo.bar === true);
+    assert(res.body.headers['content-type'] === 'application/json');
   });
 
-  it('should POST JSON with form', async () => {
+  it('should POST with form', async () => {
     const res = await app.httpRequest()
       .post('/proxy/json')
-      .set('x-client', 'unittest')
       .set('cookie', 'csrfToken=abc')
       .set('x-csrf-token', 'abc')
-      .query('name=tz')
       .type('form')
       .send({ a: 'b', foo: { bar: 'foo' } })
+      .expect('x-mock', 'true')
       .expect(200);
 
-    assert(res.headers[ 'x-proxy' ] === 'true');
-    assert(res.headers[ 'x-origin' ] === 'real-server');
-    assert(res.body.a === 'b');
     // nestedQuerystring
-    assert(res.body.foo.bar === 'foo');
+    assert(res.body.requestBody === 'a=b&foo%5Bbar%5D=foo');
+    assert(res.body.headers['content-type'] === 'application/x-www-form-urlencoded');
   });
 
-  it('should POST plain', async () => {
+  it('should POST with plain', async () => {
     const res = await app.httpRequest()
-      .post('/proxy/plain')
-      .set('x-client', 'unittest')
+      .post('/proxy/json')
       .set('cookie', 'csrfToken=abc')
       .set('x-csrf-token', 'abc')
-      .query('name=tz')
       .send('abc')
       .set('content-type', 'text/plain')
+      .expect('x-mock', 'true')
       .expect(200);
 
-    assert(res.headers['x-proxy'] === 'true');
-    assert(res.headers['x-origin'] === 'real-server');
-    assert(res.text === 'abc');
+    assert(res.body.requestBody === 'abc');
+    assert(res.body.headers['content-type'] === 'text/plain');
   });
 
   describe('upload', () => {
     it('should upload file', async () => {
       const res = await app.httpRequest()
         .post('/proxy/upload')
-        .set('x-client', 'unittest')
         .set('cookie', 'csrfToken=abc')
         .set('x-csrf-token', 'abc')
-        .query('name=tz')
         .attach('test-content', Buffer.from('test string'), 'abc.txt')
         .attach('test-file', path.join(__dirname, './fixtures/file.txt'), 'test-file.txt')
         .field('a', 'b')
+        .expect('x-mock', 'true')
         .expect(200);
 
-      assert(res.headers['x-proxy'] === 'true');
-      assert(res.headers['x-origin'] === 'real-server');
       assert(res.body.fields.a === 'b');
-      assert(res.body.files[0].field === 'test-content');
+      assert(res.body.files[0].fieldname === 'test-content');
       assert(res.body.files[0].filename === 'abc.txt');
       assert(res.body.files[0].content === 'test string');
-      assert(res.body.files[1].field === 'test-file');
+      assert(res.body.files[1].fieldname === 'test-file');
       assert(res.body.files[1].filename === 'test-file.txt');
       assert(res.body.files[1].content === 'this is a test file\n');
+      assert(res.body.headers['content-type'].startsWith('multipart/form-data'));
     });
 
     it('should upload file only field', async () => {
       const res = await app.httpRequest()
         .post('/proxy/upload')
-        .set('x-client', 'unittest')
         .set('cookie', 'csrfToken=abc')
         .set('x-csrf-token', 'abc')
-        .query('name=tz')
         .field('a', 'b')
+        .expect('x-mock', 'true')
         .expect(200);
 
-      assert(res.headers['x-proxy'] === 'true');
-      assert(res.headers['x-origin'] === 'real-server');
       assert(res.body.fields.a === 'b');
     });
 
     it('should upload file with file mode', async () => {
       const res = await app.httpRequest()
         .post('/proxy/uploadFileMode')
-        .set('x-client', 'unittest')
         .set('cookie', 'csrfToken=abc')
         .set('x-csrf-token', 'abc')
-        .query('name=tz')
         .attach('test-content', Buffer.from('test string'), 'abc.txt')
         .attach('test-file', path.join(__dirname, './fixtures/file.txt'), 'test-file.txt')
         .field('a', 'b')
+        .expect('x-mock', 'true')
         .expect(200);
 
-      assert(res.headers['x-proxy'] === 'true');
-      assert(res.headers['x-origin'] === 'real-server');
+      assert(res.body.path = '/uploadFileMode');
       assert(res.body.fields.a === 'b');
-      assert(res.body.files[0].field === 'test-content');
+      assert(res.body.files[0].fieldname === 'test-content');
       assert(res.body.files[0].filename === 'abc.txt');
       assert(res.body.files[0].content === 'test string');
-      assert(res.body.files[1].field === 'test-file');
+      assert(res.body.files[1].fieldname === 'test-file');
       assert(res.body.files[1].filename === 'test-file.txt');
       assert(res.body.files[1].content === 'this is a test file\n');
     });
@@ -179,16 +171,16 @@ describe('test/http-proxy.test.js', () => {
     it('should upload file with charset', async () => {
       const res = await app.httpRequest()
         .post('/proxy/upload')
-        .set('x-client', 'unittest')
         .set('cookie', 'csrfToken=abc')
         .set('x-csrf-token', 'abc')
         .query('_input_charset=utf-8')
-        .attach('test-file', path.join(__dirname, './fixtures/file.txt'), 'test-file.txt')
+        .attach('test-content', Buffer.from('test string 中文'), 'abc.txt')
         .field('a', 'this is 中文')
+        .expect('x-mock', 'true')
         .expect(200);
 
       assert(res.body.fields.a === 'this is 中文');
-      assert(res.body.files[0].content === 'this is a test file\n');
+      assert(res.body.files[0].content === 'test string 中文');
       assert(res.body.headers['content-type'].includes('charset=utf-8'));
     });
   });
@@ -196,9 +188,9 @@ describe('test/http-proxy.test.js', () => {
   it('should download', async () => {
     const res = await app.httpRequest()
       .post('/proxy/download')
-      .set('x-client', 'unittest')
       .set('cookie', 'csrfToken=abc')
       .set('x-csrf-token', 'abc')
+      .expect('x-mock', 'true')
       .expect(200);
 
     assert(res.headers['content-type'] === 'application/octet-stream');
@@ -206,12 +198,12 @@ describe('test/http-proxy.test.js', () => {
     assert(res.body.toString() === 'this is a test file\n');
   });
 
-  it('should error', async () => {
+  it('should proxy 500', async () => {
     const res = await app.httpRequest()
       .get('/proxy/error')
-      .set('x-client', 'unittest')
       .set('cookie', 'csrfToken=abc')
       .set('x-csrf-token', 'abc')
+      .expect('x-mock', 'true')
       .expect(500);
 
     assert(res.text === 'some error');
@@ -220,7 +212,6 @@ describe('test/http-proxy.test.js', () => {
   it('should timeout', async () => {
     await app.httpRequest()
       .get('/proxy/timeout')
-      .set('x-client', 'unittest')
       .set('cookie', 'csrfToken=abc')
       .set('x-csrf-token', 'abc')
       .expect(500);
@@ -228,50 +219,57 @@ describe('test/http-proxy.test.js', () => {
 
   describe('cookie', () => {
     it('should not send cookie when withCredentials = false && sameSite = false', async () => {
-      await app.httpRequest()
+      const res = await app.httpRequest()
         .get('/proxy/cookie')
-        .set('x-client', 'unittest')
         .set('cookie', 'a=b')
-        .expect(204);
+        .expect('x-mock', 'true')
+        .expect(200);
+
+      assert(!res.body.cookie);
     });
 
     it('should send cookie when withCredentials = true && sameSite = false', async () => {
-      await app.httpRequest()
+      const res = await app.httpRequest()
         .get('/proxy/cookie')
         .query('withCredentials=true')
-        .set('x-client', 'unittest')
         .set('cookie', 'a=b')
-        .expect('b')
+        .expect('x-mock', 'true')
         .expect(200);
+
+      assert(res.body.path === '/cookie?withCredentials=true');
+      assert(res.body.cookie === 'a=b');
     });
 
     it('should send cookie when withCredentials = false && sameSite = true', async () => {
-      await app.httpRequest()
+      const res = await app.httpRequest()
         .get('/proxy/cookie')
         .query('same=true')
-        .set('x-client', 'unittest')
         .set('cookie', 'a=b')
-        .expect('b')
+        .unexpectHeader('x-mock')
         .expect(200);
+
+      assert(res.body.path === '/cookie?same=true');
+      assert(res.body.cookie === 'b');
     });
 
     it('should send cookie when withCredentials = true && sameSite = true', async () => {
-      await app.httpRequest()
+      const res = await app.httpRequest()
         .get('/proxy/cookie')
         .query('same=true')
         .query('withCredentials=true')
-        .set('x-client', 'unittest')
         .set('cookie', 'a=b')
-        .expect('b')
+        .unexpectHeader('x-mock')
         .expect(200);
+
+      assert(res.body.path === '/cookie?same=true&withCredentials=true');
+      assert(res.body.cookie === 'b');
     });
   });
-
 
   it('should jump out of egg middleware', async () => {
     await app.httpRequest()
       .get('/proxy/header')
-      .set('x-client', 'unittest')
+      .expect('x-mock', 'true')
       .unexpectHeader('post-middleware')
       .expect(200);
   });
@@ -279,14 +277,17 @@ describe('test/http-proxy.test.js', () => {
   it('custom handler', async () => {
     const res = await app.httpRequest()
       .get('/proxy/handler')
-      .set('x-client', 'unittest')
       .set('test-header', 'true')
+      .expect('x-mock', 'true')
       .expect(200);
 
+    assert(res.body.path === '/proxy/handler');
     assert(res.body.test === true);
-    assert(res.body.a === 'c');
-    assert(!res.body['test-header']);
+    assert(res.body.headers.a === 'c');
+    assert(!res.body.headers['test-header']);
     assert(res.headers.addition === 'true');
+
+    // not jump
     assert(res.headers['post-middleware'] === 'true');
   });
 });

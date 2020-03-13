@@ -8,11 +8,11 @@ class ProxyController extends Controller {
     const { ctx } = this;
     if (typeof host !== 'string') {
       opts = host;
-      host = ctx.host;
+      host = 'example.com';
     }
     await ctx.proxyRequest(host, {
       rewrite(urlObj) {
-        urlObj.pathname = urlObj.pathname.replace(/^\/proxy/, '/real');
+        urlObj.pathname = urlObj.pathname.replace(/^\/proxy/, '');
         return urlObj;
       },
       ...opts,
@@ -23,64 +23,23 @@ class ProxyController extends Controller {
     await this._request();
   }
 
-  async json() {
-    await this._request();
-  }
-
-  async empty() {
-    await this._request();
-  }
-
-  async plain() {
-    await this._request();
-  }
-
-  async upload() {
-    await this._request();
-  }
-
-  async uploadFileMode() {
-    await this._request({
-      rewrite(urlObj) {
-        urlObj.pathname = urlObj.pathname.replace(/^\/proxy\/uploadFileMode/, '/real/upload');
-        return urlObj;
-      },
-    });
-  }
-
-  async download() {
-    await this._request();
-  }
-
-  async header() {
-    await this._request();
-  }
-
-  async error() {
-    await this._request();
-  }
-
   async timeout() {
     await this._request({ timeout: 1 });
   }
 
   async cookie() {
     const { ctx } = this;
-    const host = ctx.query.same ? ctx.host : 'localhost';
+    const host = ctx.query.same ? ctx.host : 'example.com';
     const withCredentials = ctx.query.withCredentials;
     await this._request(host, { withCredentials });
   }
 
   async handler() {
-    await this._request({
+    await this.ctx.proxyRequest('example.com', {
       dataType: 'json',
       streaming: false,
       headers: {
         a: 'c',
-      },
-      rewrite(urlObj) {
-        urlObj.pathname = '/real/header';
-        return urlObj;
       },
       beforeRequest({ headers }) {
         delete headers['test-header'];
