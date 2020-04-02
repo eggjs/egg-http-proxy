@@ -287,7 +287,7 @@ describe('test/http-proxy.test.js', () => {
     assert(!res.body.headers['test-header']);
     assert(res.headers.addition === 'true');
 
-    // not jump
-    assert(res.headers['post-middleware'] === 'true');
+    // jump
+    assert(!res.headers['post-middleware']);
   });
 });
