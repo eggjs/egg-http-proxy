@@ -44,10 +44,15 @@ class ProxyController extends Controller {
       beforeRequest({ headers }) {
         delete headers['test-header'];
       },
-      beforeResponse(res) {
-        res.data.test = true;
-        res.headers.addition = 'true';
-        return res;
+      beforeResponse(res, { ctx }) {
+        return new Promise(resolve => {
+          setTimeout(() => {
+            res.data.test = true;
+            res.data.ctxUrl = ctx.url;
+            res.headers.addition = 'true';
+            resolve(res);
+          }, 10);
+        });
       },
     });
   }
