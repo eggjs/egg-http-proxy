@@ -1,4 +1,10 @@
 
+1.1.0 / 2020-04-02
+==================
+
+**features**
+  * [[`182e0b8`](http://github.com/eggjs/egg-http-proxy/commit/182e0b8da4ace24c5e09b77c4e2987fd42cdf708)] - feat: respond=false for  all && beforeResponse support async (#6) (TZ | 天猪 <<atian25@qq.com>>)
+
 1.0.4 / 2020-03-13
 ==================
 
