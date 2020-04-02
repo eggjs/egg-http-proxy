@@ -67,6 +67,22 @@ await ctx.proxyRequest('github.com', {
 });
 ```
 
+### modify response
+
+```js
+await ctx.proxyRequest('github.com', {
+
+  streaming: false,
+
+  async beforeResponse(proxyResult) {
+    proxyResult.headers.addition = 'true';
+    // streaming=false should modify `data`, otherwise use stream to handler proxyResult.res yourself
+    proxyResult.data = proxyResult.data.replace('github.com', 'www.github.com');
+    return proxyResult;
+  },
+});
+```
+
 ## Configuration
 
 ```js

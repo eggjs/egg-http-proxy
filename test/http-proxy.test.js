@@ -282,13 +282,12 @@ describe('test/http-proxy.test.js', () => {
       .expect(200);
 
     assert(res.body.path === '/proxy/handler');
-    assert(res.body.ctxUrl === '/proxy/handler');
     assert(res.body.test === true);
     assert(res.body.headers.a === 'c');
     assert(!res.body.headers['test-header']);
     assert(res.headers.addition === 'true');
 
-    // not jump
-    assert(res.headers['post-middleware'] === 'true');
+    // jump
+    assert(!res.headers['post-middleware']);
   });
 });
