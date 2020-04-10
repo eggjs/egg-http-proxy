@@ -37,6 +37,21 @@ exports.httpProxy = {
 };
 ```
 
+## Configuration
+
+```js
+// {app_root}/config/config.default.js
+
+/**
+ * @property {Number} timeout - proxy timeout, ms
+ * @property {Boolean} withCredentials - whether send cookie when cors
+ * @property {Object} ignoreHeaders - ignore request/response headers
+ */
+exports.httpProxy = {};
+```
+
+see [config/config.default.js](config/config.default.js) for more detail.
+
 ## Usage
 
 ```js
@@ -83,16 +98,38 @@ await ctx.proxyRequest('github.com', {
 });
 ```
 
-## Configuration
+### cache
 
 ```js
-// {app_root}/config/config.default.js
-exports.httpProxy = {
+const LRU = require('lru-cache');
 
+exports.httpProxy = {
+  cache: true,
+  cacheManager: {
+    _cache: new LRU({ maxAge: 1000 * 60 * 60 }),
+
+    // get cache id, if undefined then don't cache the request
+    calcId(targetUrl, options) {
+      if (options.method === 'GET') return targetUrl;
+    },
+
+    // get request cache
+    get(key) {
+      return this._cache.get(key);
+    },
+
+    // store request cache
+    set(key, value) {
+      // recommanded to use `streaming: false` when using cache, due to cache stream is not safety.
+      // then may sure not cache `res`
+      value.res = undefined;
+      value.data = value.data.toString();
+      this._cache.set(key, value);
+    },
+  },
 };
 ```
 
-see [config/config.default.js](config/config.default.js) for more detail.
 
 ## Questions & Suggestions
 
