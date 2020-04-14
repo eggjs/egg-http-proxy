@@ -13,12 +13,12 @@ describe('test/cache.test.js', () => {
       baseDir: 'apps/cache',
     });
     await app.ready();
-    cache = app.config.httpProxy.cacheManager._cache;
+    cache = app.httpProxyCache.cache;
   });
 
   beforeEach(() => mockServer.mock());
   afterEach(() => {
-    cache = app.config.httpProxy.cacheManager._cache = {};
+    cache.reset();
     mockServer.restore();
   });
 
@@ -33,9 +33,9 @@ describe('test/cache.test.js', () => {
 
     assert(res.body.path = '/?name=tz');
     assert(!res.headers['x-proxy-cache']);
-    assert(cache['http://example.com/?name=tz']);
+    assert(cache.has('http://example.com/?name=tz'));
     // not save res
-    assert(!cache['http://example.com/?name=tz'].res);
+    assert(!cache.get('http://example.com/?name=tz').res);
 
     res = await app.httpRequest()
       .get('/proxy')
@@ -56,7 +56,7 @@ describe('test/cache.test.js', () => {
 
     assert(res.body.requestBody.a === 'b');
     assert(!res.headers['x-proxy-cache']);
-    assert(Object.keys(cache).length === 0);
+    assert(cache.length === 0);
 
     mockServer.restore();
     mockServer.mock();
@@ -70,6 +70,18 @@ describe('test/cache.test.js', () => {
 
     assert(res.body.requestBody.a === 'b');
     assert(!res.headers[ 'x-proxy-cache' ]);
-    assert(Object.keys(cache).length === 0);
+    assert(cache.length === 0);
+  });
+
+  it('should not cache when options.cache = false', async () => {
+    const res = await app.httpRequest()
+      .get('/proxy/nocache')
+      .query('name=tz')
+      .expect(200);
+
+    assert(res.body.path = '/?name=tz');
+    assert(!res.headers['x-proxy-cache']);
+
+    assert(cache.length === 0);
   });
 });

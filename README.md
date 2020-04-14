@@ -26,7 +26,7 @@ A simple http proxy base on egg httpclient.
 
 
 ```bash
-$ npm i @eggjs/http-proxy --save
+$ npm i --save @eggjs/http-proxy
 ```
 
 ```js
@@ -45,6 +45,8 @@ exports.httpProxy = {
 /**
  * @property {Number} timeout - proxy timeout, ms
  * @property {Boolean} withCredentials - whether send cookie when cors
+ * @property {Boolean} cache - whether cache proxy
+ * @property {Object} cacheOptions - cache options, see https://www.npmjs.com/package/lru-cache
  * @property {Object} ignoreHeaders - ignore request/response headers
  */
 exports.httpProxy = {};
@@ -91,7 +93,8 @@ await ctx.proxyRequest('github.com', {
 
   async beforeResponse(proxyResult) {
     proxyResult.headers.addition = 'true';
-    // streaming=false should modify `data`, otherwise use stream to handler proxyResult.res yourself
+    // use streaming=false, then modify `data`,
+    // otherwise handler `proxyResult.res` as stream yourself, but don't forgot to adjuest content-length
     proxyResult.data = proxyResult.data.replace('github.com', 'www.github.com');
     return proxyResult;
   },
@@ -101,35 +104,24 @@ await ctx.proxyRequest('github.com', {
 ### cache
 
 ```js
-const LRU = require('lru-cache');
-
 exports.httpProxy = {
-  cache: true,
-  cacheManager: {
-    _cache: new LRU({ maxAge: 1000 * 60 * 60 }),
-
+  cache: false,
+  cacheOptions: {
     // get cache id, if undefined then don't cache the request
-    calcId(targetUrl, options) {
-      if (options.method === 'GET') return targetUrl;
-    },
-
-    // get request cache
-    get(key) {
-      return this._cache.get(key);
-    },
-
-    // store request cache
-    set(key, value) {
-      // recommanded to use `streaming: false` when using cache, due to cache stream is not safety.
-      // then may sure not cache `res`
-      value.res = undefined;
-      value.data = value.data.toString();
-      this._cache.set(key, value);
-    },
+    // calcId(targetUrl, options) {
+    //   if (options.method === 'GET') return targetUrl;
+    // },
+    // maxAge: 1000 * 60 * 60,
+    // max: 100,
   },
 };
 ```
 
+control cache case by case:
+
+```js
+await ctx.proxyRequest('github.com', { cache: true, maxAge: 24 * 60 * 60 * 1000 });
+```
 
 ## Questions & Suggestions
 

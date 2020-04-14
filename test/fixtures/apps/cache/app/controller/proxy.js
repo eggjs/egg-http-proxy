@@ -25,6 +25,17 @@ class ProxyController extends Controller {
   async index() {
     await this._request();
   }
+
+  async nocache() {
+    await this._request({
+      cache: false,
+      rewrite(urlObj) {
+        urlObj.port = 80;
+        urlObj.pathname = '/';
+        return urlObj;
+      },
+    });
+  }
 }
 
 module.exports = ProxyController;
