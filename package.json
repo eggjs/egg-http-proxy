@@ -17,7 +17,8 @@
   "dependencies": {
     "address": "^1.1.2",
     "content-type": "^1.0.4",
-    "formstream": "^1.1.0"
+    "formstream": "^1.1.0",
+    "lru-cache": "^5.1.1"
   },
   "devDependencies": {
     "async-busboy": "^1.0.1",

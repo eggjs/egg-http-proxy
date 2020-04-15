@@ -1,6 +1,6 @@
 'use strict';
 
-const HTTPPROXY = Symbol('context#httpProxy');
+const HTTPPROXY = Symbol('Context#httpProxy');
 
 module.exports = {
   /**
