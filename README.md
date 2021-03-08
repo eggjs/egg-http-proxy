@@ -63,6 +63,7 @@ await ctx.proxyRequest('github.com');
 await ctx.proxyRequest('github.com', {
   rewrite(urlObj) {
     urlObj.pathname = '/egg/eggjs/api/user';
+    return urlObj;
   },
 });
 ```
