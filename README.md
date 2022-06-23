@@ -26,7 +26,7 @@ A simple http proxy base on egg httpclient.
 
 
 ```bash
-$ npm i @eggjs/http-proxy --save
+$ npm i --save @eggjs/http-proxy
 ```
 
 ```js
@@ -36,6 +36,23 @@ exports.httpProxy = {
   package: '@eggjs/http-proxy',
 };
 ```
+
+## Configuration
+
+```js
+// {app_root}/config/config.default.js
+
+/**
+ * @property {Number} timeout - proxy timeout, ms
+ * @property {Boolean} withCredentials - whether send cookie when cors
+ * @property {Boolean} cache - whether cache proxy
+ * @property {Object} cacheOptions - cache options, see https://www.npmjs.com/package/lru-cache
+ * @property {Object} ignoreHeaders - ignore request/response headers
+ */
+exports.httpProxy = {};
+```
+
+see [config/config.default.js](config/config.default.js) for more detail.
 
 ## Usage
 
@@ -77,23 +94,35 @@ await ctx.proxyRequest('github.com', {
 
   async beforeResponse(proxyResult) {
     proxyResult.headers.addition = 'true';
-    // streaming=false should modify `data`, otherwise use stream to handler proxyResult.res yourself
+    // use streaming=false, then modify `data`,
+    // otherwise handler `proxyResult.res` as stream yourself, but don't forgot to adjuest content-length
     proxyResult.data = proxyResult.data.replace('github.com', 'www.github.com');
     return proxyResult;
   },
 });
 ```
 
-## Configuration
+### cache
 
 ```js
-// {app_root}/config/config.default.js
 exports.httpProxy = {
-
+  cache: false,
+  cacheOptions: {
+    // get cache id, if undefined then don't cache the request
+    // calcId(targetUrl, options) {
+    //   if (options.method === 'GET') return targetUrl;
+    // },
+    // maxAge: 1000 * 60 * 60,
+    // max: 100,
+  },
 };
 ```
 
-see [config/config.default.js](config/config.default.js) for more detail.
+control cache case by case:
+
+```js
+await ctx.proxyRequest('github.com', { cache: true, maxAge: 24 * 60 * 60 * 1000 });
+```
 
 ## Questions & Suggestions
 
