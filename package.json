@@ -1,18 +1,20 @@
 {
-  "name": "@eggjs/http-proxy",
-  "version": "1.1.0",
-  "description": "http proxy for egg",
+  "name": "http-proxy-lo",
+  "version": "1.0.0",
+  "description": "[![NPM version][npm-image]][npm-url]\r [![build status][travis-image]][travis-url]\r [![Test coverage][codecov-image]][codecov-url]\r [![David deps][david-image]][david-url]\r [![Known Vulnerabilities][snyk-image]][snyk-url]\r [![npm download][download-image]][download-url]",
   "eggPlugin": {
     "name": "httpProxy"
   },
-  "keywords": [
-    "egg",
-    "eggPlugin",
-    "egg-plugin",
-    "proxy"
-  ],
+  "main": ".autod.conf.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "address": "^1.1.2",
@@ -55,9 +57,14 @@
   "ci": {
     "version": "10, 12"
   },
-  "repository": "git@github.com:eggjs/egg-http-proxy.git",
-  "bugs": "https://github.com/eggjs/egg/issues",
-  "homepage": "https://github.com/eggjs/egg-http-proxy#readme",
-  "author": "TZ <atian25@qq.com>",
-  "license": "MIT"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/llh1187/egg-http-proxy.git"
+  },
+  "author": "lo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/llh1187/egg-http-proxy/issues"
+  },
+  "homepage": "https://github.com/llh1187/egg-http-proxy#readme"
 }
