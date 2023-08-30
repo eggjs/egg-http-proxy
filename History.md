@@ -1,4 +1,13 @@
 
+1.1.1 / 2023-08-30
+==================
+
+**fixes**
+  * [[`b8c0216`](http://github.com/eggjs/egg-http-proxy/commit/b8c0216bbf53f3708d8379eaa059db95a28d6440)] - fix: use pipeline instead of pipe to prevent memory leaks caused by streams error or be closed. (#12) (Eros Zhao <<zyeros1991@gmail.com>>)
+
+**others**
+  * [[`d0caed9`](http://github.com/eggjs/egg-http-proxy/commit/d0caed95d679ea01fbf22012b531aa6dff596cb4)] - docs: add 'return urlObj' for 'rewrite' example (#8) (QingDeng <<zrl412@163.com>>)
+
 1.1.0 / 2020-04-02
 ==================
 
